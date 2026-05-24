@@ -172,9 +172,22 @@ export default function App() {
       const res = await fetch('/api/documents');
       if (res.ok) {
         const data = await res.json();
-        setDocuments(data);
-        if (data.length > 0 && !selectedDocId) {
-          setSelectedDocId(data[0].id);
+        if (data && data.length > 0) {
+          setDocuments(data);
+          if (!selectedDocId) {
+            setSelectedDocId(data[0].id);
+          }
+        } else {
+          // Nếu API trả về mảng rỗng (ví dụ: Vercel serverless khởi động lại từ đầu), tự động phục hồi từ seedDocuments và localDocs
+          const localDocsStr = localStorage.getItem('tplaw_custom_documents');
+          const localDocs: LandDocument[] = localDocsStr ? JSON.parse(localDocsStr) : [];
+          const seedIds = new Set(seedDocuments.map(d => d.id));
+          const filteredLocal = localDocs.filter(d => !seedIds.has(d.id));
+          const combined = [...filteredLocal, ...seedDocuments];
+          setDocuments(combined);
+          if (combined.length > 0 && !selectedDocId) {
+            setSelectedDocId(combined[0].id);
+          }
         }
       } else {
         throw new Error('Fallback to local state');
@@ -183,7 +196,9 @@ export default function App() {
       console.warn('Đang tải danh sách tài liệu từ bộ nhớ cục bộ (chạy tối ưu tĩnh / Vercel):', err);
       const localDocsStr = localStorage.getItem('tplaw_custom_documents');
       const localDocs: LandDocument[] = localDocsStr ? JSON.parse(localDocsStr) : [];
-      const combined = [...localDocs, ...seedDocuments];
+      const seedIds = new Set(seedDocuments.map(d => d.id));
+      const filteredLocal = localDocs.filter(d => !seedIds.has(d.id));
+      const combined = [...filteredLocal, ...seedDocuments];
       setDocuments(combined);
       if (combined.length > 0 && !selectedDocId) {
         setSelectedDocId(combined[0].id);
@@ -191,9 +206,13 @@ export default function App() {
     }
   };
 
-  // Save documents to localStorage automatically to support fully stateless environments like Vercel
+  // Chỉ sao lưu các văn bản tùy chỉnh của người dùng lên localStorage để giữ dung lượng lưu trữ gọn nhẹ và tránh lỗi đè rỗng
   useEffect(() => {
-    localStorage.setItem('tplaw_custom_documents', JSON.stringify(documents));
+    if (documents.length > 0) {
+      const seedIds = new Set(seedDocuments.map(d => d.id));
+      const customDocs = documents.filter(d => !seedIds.has(d.id));
+      localStorage.setItem('tplaw_custom_documents', JSON.stringify(customDocs));
+    }
   }, [documents]);
 
   useEffect(() => {
