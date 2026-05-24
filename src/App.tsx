@@ -105,6 +105,9 @@ export default function App() {
   const [readerFontFamily, setReaderFontFamily] = useState<'sans' | 'serif' | 'mono'>('serif');
   const [readerSidebarOpen, setReaderSidebarOpen] = useState<boolean>(true);
   const [readerFocused, setReaderFocused] = useState<boolean>(false);
+  const [showSummary, setShowSummary] = useState<boolean>(false);
+  const [showCustomizer, setShowCustomizer] = useState<boolean>(false);
+  const [showRepoSummary, setShowRepoSummary] = useState<boolean>(false);
 
   // Inline document reader states inside Section 3 (Kho dữ liệu)
   const [viewingDocInRepoId, setViewingDocInRepoId] = useState<string | null>(null);
@@ -1231,13 +1234,13 @@ Thời gian trích xuất: ${new Date().toLocaleString('vi-VN')}
     <div className="w-full min-h-screen bg-[#F4F1EA] text-[#1A1A1A] font-sans flex flex-col antialiased">
       
       {/* Top Header Navigation */}
-      <nav className="h-16 border-b border-[#D1CEC7] flex items-center justify-between px-8 bg-white shadow-sm shrink-0">
+      <nav className="h-16 border-b border-[#D1CEC7] flex items-center justify-between px-4 md:px-8 bg-white shadow-sm shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 bg-[#8C271E] rounded-md flex items-center justify-center transform rotate-12 shadow-sm">
             <span className="text-white font-serif font-bold text-base -rotate-12">TP</span>
           </div>
           <div>
-            <span className="font-serif text-xl font-bold tracking-tight uppercase text-[#8C271E]">TP LAW</span>
+            <span className="font-serif text-lg md:text-xl font-bold tracking-tight uppercase text-[#8C271E]">TP LAW</span>
             <span className="hidden sm:inline text-xs text-stone-500 font-serif ml-2 italic">Hệ thống tra cứu pháp lý tối giản</span>
           </div>
         </div>
@@ -1264,38 +1267,41 @@ Thời gian trích xuất: ${new Date().toLocaleString('vi-VN')}
           <button
             onClick={() => setActiveHubTab('search')}
             id="tab-search-btn"
-            className={`flex-1 md:flex-none uppercase tracking-wider text-xs md:text-sm font-bold py-3.5 px-6 border-b-4 transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 md:flex-none uppercase tracking-wider text-[10px] md:text-sm font-bold py-3.5 px-3 md:px-6 border-b-4 transition-all flex items-center justify-center gap-1.5 ${
               activeHubTab === 'search'
                 ? 'border-[#8C271E] text-[#8C271E] bg-[#8C271E]/5 font-extrabold'
                 : 'border-transparent text-stone-500 hover:text-stone-900 hover:bg-stone-50'
             }`}
           >
-            <Search className="w-4 h-4" />
-            <span>Mục 1: Tìm kiếm & Tra cứu</span>
+            <Search className="w-3.5 md:w-4 h-3.5 md:h-4 shrink-0" />
+            <span className="hidden sm:inline">Mục 1: Tìm kiếm & Tra cứu</span>
+            <span className="inline sm:hidden">Mục 1: Tra cứu</span>
           </button>
           <button
             onClick={() => setActiveHubTab('input')}
             id="tab-input-btn"
-            className={`flex-1 md:flex-none uppercase tracking-wider text-xs md:text-sm font-bold py-3.5 px-6 border-b-4 transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 md:flex-none uppercase tracking-wider text-[10px] md:text-sm font-bold py-3.5 px-3 md:px-6 border-b-4 transition-all flex items-center justify-center gap-1.5 ${
               activeHubTab === 'input'
                 ? 'border-[#8C271E] text-[#8C271E] bg-[#8C271E]/5 font-extrabold'
                 : 'border-transparent text-stone-500 hover:text-stone-900 hover:bg-stone-50'
             }`}
           >
-            <Upload className="w-4 h-4" />
-            <span>Mục 2: Nhập thông tin văn bản</span>
+            <Upload className="w-3.5 md:w-4 h-3.5 md:h-4 shrink-0" />
+            <span className="hidden sm:inline">Mục 2: Nhập thông tin văn bản</span>
+            <span className="inline sm:hidden">Mục 2: Nạp tải</span>
           </button>
           <button
             onClick={() => setActiveHubTab('repository')}
             id="tab-repository-btn"
-            className={`flex-1 md:flex-none uppercase tracking-wider text-xs md:text-sm font-bold py-3.5 px-6 border-b-4 transition-all flex items-center justify-center gap-2 ${
+            className={`flex-1 md:flex-none uppercase tracking-wider text-[10px] md:text-sm font-bold py-3.5 px-3 md:px-6 border-b-4 transition-all flex items-center justify-center gap-1.5 ${
               activeHubTab === 'repository'
                 ? 'border-[#8C271E] text-[#8C271E] bg-[#8C271E]/5 font-extrabold'
                 : 'border-transparent text-stone-500 hover:text-stone-900 hover:bg-stone-50'
             }`}
           >
-            <Database className="w-4 h-4" />
-            <span>Mục 3: Kho dữ liệu</span>
+            <Database className="w-3.5 md:w-4 h-3.5 md:h-4 shrink-0" />
+            <span className="hidden sm:inline">Mục 3: Kho dữ liệu</span>
+            <span className="inline sm:hidden">Mục 3: Kho lưu</span>
           </button>
         </div>
 
@@ -1474,12 +1480,12 @@ Thời gian trích xuất: ${new Date().toLocaleString('vi-VN')}
                 {/* READING ROOM VIEWER CONTAINER */}
                 <div className={
                   readerFocused
-                    ? `fixed inset-2 sm:inset-4 md:inset-6 z-50 shadow-2xl p-5 md:p-8 rounded-2xl flex flex-col h-[calc(100vh-16px)] sm:h-[calc(100vh-32px)] md:h-[calc(100vh-48px)] overflow-hidden transition-all duration-300 ${
+                    ? `fixed inset-2 sm:inset-4 md:inset-6 z-50 shadow-2xl p-4 md:p-8 rounded-2xl flex flex-col h-[calc(100vh-16px)] sm:h-[calc(100vh-32px)] md:h-[calc(100vh-48px)] overflow-hidden transition-all duration-300 ${
                         readerTheme === 'warm' ? 'bg-[#FBF8F3] border-[#E2DBD0] text-[#2B1F17]' :
                         readerTheme === 'dark' ? 'bg-[#151514] border-[#31312E] text-stone-200' :
                         'bg-white border-[#C8C5BD] text-stone-850'
                       }`
-                    : `border rounded-xl p-5 md:p-7 shadow-sm flex flex-col h-[740px] overflow-hidden transition-all duration-300 ${
+                    : `border rounded-xl p-3.5 md:p-7 shadow-sm flex flex-col h-[520px] sm:h-[620px] md:h-[740px] overflow-hidden transition-all duration-300 ${
                         readerTheme === 'warm' ? 'bg-[#FBF8F3] border-[#DCD7CD]' :
                         readerTheme === 'dark' ? 'bg-[#191917] border-[#2D2D2A]' :
                         'bg-white border-[#D1CEC7]'
@@ -1490,64 +1496,119 @@ Thời gian trích xuất: ${new Date().toLocaleString('vi-VN')}
 
                     return (
                       <div className="w-full flex flex-col h-full overflow-hidden">
-                        <header className={`mb-5 pb-5 border-b shrink-0 ${themeColors.headerBorder}`}>
-                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
+                        <header className={`mb-3.5 pb-3.5 border-b shrink-0 ${themeColors.headerBorder}`}>
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
                             <div>
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className={`text-[10px] font-bold px-2.5 py-1 rounded tracking-widest uppercase font-sans ${themeColors.tagBg}`}>
+                              <div className="flex flex-wrap items-center gap-2 mb-1.5">
+                                <span className={`text-[9.5px] md:text-[10px] font-bold px-2.5 py-0.5 md:py-1 rounded tracking-widest uppercase font-sans ${themeColors.tagBg}`}>
                                   {activeDoc.type}
                                 </span>
-                                <span className={`text-xs font-semibold flex items-center gap-1 font-mono ${themeColors.subtext}`}>
+                                <span className={`text-[11px] md:text-xs font-semibold flex items-center gap-1 font-mono ${themeColors.subtext}`}>
                                   <Calendar className="w-3.5 h-3.5 opacity-75" />
                                   Ban hành: {activeDoc.issueDate}
                                 </span>
                               </div>
 
-                              <h1 className={`font-serif text-xl md:text-2xl font-bold leading-tight tracking-tight ${themeColors.title}`}>
+                              <h1 className={`font-serif text-sm sm:text-lg md:text-2xl font-bold leading-tight tracking-tight line-clamp-3 md:line-clamp-none ${themeColors.title}`} title={activeDoc.title}>
                                 {activeDoc.title}
                               </h1>
 
-                              <p className={`text-xs font-medium mt-1.5 leading-relaxed font-sans ${themeColors.subtext}`}>
+                              <p className={`text-[10px] md:text-xs font-medium mt-1 leading-relaxed font-sans ${themeColors.subtext}`}>
                                 SỐ KÝ HIỆU: <span className={`font-bold font-mono ${themeColors.matchedText}`}>{activeDoc.abbreviation}</span>
                               </p>
                             </div>
                             
                             <div className="flex gap-1 self-start shrink-0 font-sans">
                               <button 
-                                type="button"
+                                type="button" 
                                 onClick={handleExportReport}
                                 title="Tải báo cáo kết quả tra cứu văn bản"
-                                className="flex items-center gap-1.5 px-3.5 py-2 bg-[#8C271E] hover:bg-[#721f18] text-white text-xs font-bold rounded shadow transition-all hover:shadow-md"
+                                className="flex items-center gap-1 px-2.5 py-1.5 md:px-3.5 md:py-2 bg-[#8C271E] hover:bg-[#721f18] text-white text-[10px] md:text-sm font-bold rounded shadow transition-all hover:shadow-md cursor-pointer"
                               >
-                                <Download className="w-3.5 h-3.5" />
-                                Xuất Báo Cáo
+                                <Download className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                                <span className="hidden xs:inline">Xuất Báo Cáo</span>
+                                <span className="inline xs:hidden">Phục hồi</span>
                               </button>
                             </div>
                           </div>
 
-                          {/* Sơ lược tóm tắt */}
+                          {/* Sơ lược tóm tắt - Collapsible on Mobile */}
                           {activeDoc.summary && (
-                            <div className={`mt-4 p-3 border-l-2 rounded text-xs leading-relaxed font-serif italic ${
-                              readerTheme === 'warm' ? 'bg-[#F5ECE2]/60 border-[#C5B496] text-[#54463A]' : 
-                              readerTheme === 'dark' ? 'bg-[#222220] border-[#555] text-stone-400' : 
-                              'bg-stone-50 border-stone-300 text-stone-600'
-                            }`}>
-                              <span className="font-sans font-extrabold uppercase not-italic text-[9px] tracking-widest text-stone-400 block mb-1">
-                                Tóm tắt văn bản
-                              </span>
-                              {activeDoc.summary}
+                            <div className="mt-2.5">
+                              {/* Mobile Toggle Button */}
+                              <button
+                                type="button"
+                                onClick={() => setShowSummary(!showSummary)}
+                                className="flex md:hidden items-center justify-between w-full text-left py-1.5 px-2.5 rounded bg-stone-100/90 dark:bg-stone-850 text-[10px] font-bold text-[#8C271E] dark:text-amber-400 font-sans border border-stone-200/60 dark:border-stone-750 transition-all mb-1"
+                              >
+                                <span>{showSummary ? '▲ Đóng tóm tắt tóm lược' : '▼ Xem nhanh tóm tắt văn bản'}</span>
+                              </button>
+                              
+                              <div className={`${showSummary ? 'block' : 'hidden md:block'} p-2.5 md:p-3 border-l-2 rounded text-xs md:text-xs leading-relaxed font-serif italic ${
+                                readerTheme === 'warm' ? 'bg-[#F5ECE2]/60 border-[#C5B496] text-[#54463A]' : 
+                                readerTheme === 'dark' ? 'bg-[#222220] border-[#555] text-stone-400' : 
+                                'bg-stone-50 border-stone-300 text-stone-600'
+                              }`}>
+                                <span className="font-sans font-extrabold uppercase not-italic text-[9px] tracking-widest text-stone-400 block mb-1">
+                                  Tóm tắt văn bản
+                                </span>
+                                {activeDoc.summary}
+                              </div>
                             </div>
                           )}
                         </header>
 
-                        {/* MODERN READING CUSTOMIZER TOOLBAR */}
-                        <div className={`p-2.5 rounded-lg border flex flex-wrap items-center justify-between gap-3 font-sans mb-4 shrink-0 transition-colors ${
+                        {/* COMPACT CONTROL BAR MOBILE ONLY */}
+                        <div className="flex md:hidden items-center justify-between gap-1.5 p-1.5 rounded-lg bg-[#FAF9F5] dark:bg-stone-900 border border-[#D1CEC7]/40 dark:border-stone-800 mb-2.5 shrink-0 font-sans">
+                          <button
+                            type="button"
+                            onClick={() => setReaderSidebarOpen(!readerSidebarOpen)}
+                            className={`p-1.5 rounded-md text-[10px] font-bold flex items-center gap-1 transition-all border outline-none ${
+                              readerSidebarOpen
+                                ? 'bg-[#8C271E] text-white border-transparent shadow-xs'
+                                : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-300 dark:border-stone-700 font-medium'
+                            }`}
+                          >
+                            <BookOpen className="w-3 h-3" />
+                            <span>Mục lục ({activeDoc.sections.length})</span>
+                          </button>
+
+                          <div className="flex items-center gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => setShowCustomizer(!showCustomizer)}
+                              className={`p-1.5 rounded-md text-[10px] font-bold flex items-center gap-1 transition-all border outline-none ${
+                                showCustomizer
+                                  ? 'bg-[#8C271E] text-white border-transparent shadow-xs'
+                                  : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-300 dark:border-stone-700 font-medium'
+                              }`}
+                            >
+                              <Settings2 className="w-3 h-3" />
+                              <span>Tuỳ chỉnh đọc</span>
+                            </button>
+
+                            <button
+                              type="button"
+                              onClick={() => setReaderFocused(!readerFocused)}
+                              className={`p-1.5 rounded-md border text-[10px] font-bold flex items-center gap-1 transition-all outline-none ${
+                                readerFocused
+                                  ? 'bg-amber-500 text-white border-transparent'
+                                  : 'bg-white dark:bg-stone-800 text-stone-600 dark:text-stone-300 border-stone-300 dark:border-stone-700'
+                              }`}
+                            >
+                              <Maximize2 className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+
+                        {/* MODERN READING CUSTOMIZER TOOLBAR (ALWAYS VISIBLE ON DESKTOP, CONDITIONAL ON MOBILE) */}
+                        <div className={`${showCustomizer ? 'flex' : 'hidden md:flex'} p-2 md:p-2.5 rounded-lg border flex-col sm:flex-row sm:items-center sm:justify-between gap-3 font-sans mb-3 md:mb-4 shrink-0 transition-colors ${
                           readerTheme === 'warm' ? 'bg-[#F2ECD8]/90 border-[#DFD6BD]/50 text-[#4E4136]' :
                           readerTheme === 'dark' ? 'bg-[#21211F] border-stone-800 text-stone-300' :
                           'bg-stone-50 border-stone-200 text-stone-700'
                         }`}>
                           {/* Left controls: Sidebar toggle & statistics quick info */}
-                          <div className="flex items-center gap-2">
+                          <div className="hidden md:flex items-center gap-2">
                             <button
                               type="button"
                               onClick={() => setReaderSidebarOpen(!readerSidebarOpen)}
@@ -1569,13 +1630,14 @@ Thời gian trích xuất: ${new Date().toLocaleString('vi-VN')}
                           </div>
 
                           {/* Middle controls: Typography selection & sizing */}
-                          <div className="flex items-center flex-wrap gap-3">
+                          <div className="flex flex-col xs:flex-row items-stretch xs:items-center flex-wrap gap-2.5">
                             {/* Font pick switcher */}
                             <div className="flex bg-black/5 dark:bg-stone-800 rounded-lg p-0.5 border border-stone-200/40 dark:border-stone-700 scale-95 md:scale-100">
                               <button
+                                key="font-serif"
                                 type="button"
                                 onClick={() => setReaderFontFamily('serif')}
-                                className={`px-2.5 py-1 text-[10px] sm:text-xs font-bold rounded-md font-serif transition-all ${
+                                className={`flex-1 xs:flex-none px-2.5 py-1 text-[10px] sm:text-xs font-bold rounded-md font-serif transition-all ${
                                   readerFontFamily === 'serif' 
                                     ? 'bg-white dark:bg-stone-700 shadow-sm text-[#8C271E] dark:text-amber-400' 
                                     : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'
@@ -1584,9 +1646,10 @@ Thời gian trích xuất: ${new Date().toLocaleString('vi-VN')}
                                 Serif (Bản in)
                               </button>
                               <button
+                                key="font-sans"
                                 type="button"
                                 onClick={() => setReaderFontFamily('sans')}
-                                className={`px-2.5 py-1 text-[10px] sm:text-xs font-bold rounded-md font-sans transition-all ${
+                                className={`flex-1 xs:flex-none px-2.5 py-1 text-[10px] sm:text-xs font-bold rounded-md font-sans transition-all ${
                                   readerFontFamily === 'sans' 
                                     ? 'bg-white dark:bg-stone-700 shadow-sm text-[#8C271E] dark:text-amber-400' 
                                     : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'
@@ -1595,9 +1658,10 @@ Thời gian trích xuất: ${new Date().toLocaleString('vi-VN')}
                                 Sans (Dễ nhìn)
                               </button>
                               <button
+                                key="font-mono"
                                 type="button"
                                 onClick={() => setReaderFontFamily('mono')}
-                                className={`px-2.5 py-1 text-[10px] sm:text-xs font-bold rounded-md font-mono transition-all ${
+                                className={`flex-1 xs:flex-none px-2.5 py-1 text-[10px] sm:text-xs font-bold rounded-md font-mono transition-all ${
                                   readerFontFamily === 'mono' 
                                     ? 'bg-white dark:bg-stone-700 shadow-sm text-[#8C271E] dark:text-amber-400' 
                                     : 'text-stone-500 hover:text-stone-800 dark:hover:text-stone-300'
@@ -1608,7 +1672,7 @@ Thời gian trích xuất: ${new Date().toLocaleString('vi-VN')}
                             </div>
 
                             {/* Font size button controls */}
-                            <div className="flex items-center gap-1 bg-black/5 dark:bg-stone-800 rounded-lg p-0.5 border border-stone-200/40 dark:border-stone-700">
+                            <div className="flex items-center justify-between xs:justify-start gap-1 bg-black/5 dark:bg-stone-800 rounded-lg p-0.5 border border-stone-200/40 dark:border-stone-700">
                               <button
                                 type="button"
                                 onClick={() => {
@@ -1652,7 +1716,7 @@ Thời gian trích xuất: ${new Date().toLocaleString('vi-VN')}
                           </div>
 
                           {/* Right controls: Ambient theme presets & Focus mode */}
-                          <div className="flex items-center gap-2.5">
+                          <div className="flex items-center justify-between sm:justify-end gap-2.5">
                             {/* Theme circle selectors */}
                             <div className="flex items-center gap-1.5 bg-black/5 dark:bg-stone-800 rounded-lg p-1 border border-stone-200/40 dark:border-stone-700 bg-[#E2E1DD]/30">
                               {/* Classic */}
@@ -1749,16 +1813,24 @@ Thời gian trích xuất: ${new Date().toLocaleString('vi-VN')}
                         )}
 
                         {/* MAIN SPLIT PANE BODY */}
-                        <div className="flex-1 flex overflow-hidden min-h-0 w-full">
+                        <div className="flex-1 flex overflow-hidden min-h-0 w-full relative">
                           
+                          {/* Sidebar Backdrop Overlay on Mobile */}
+                          {readerSidebarOpen && (
+                            <div 
+                              className="md:hidden absolute inset-0 bg-stone-900/40 backdrop-blur-xs z-25 cursor-pointer" 
+                              onClick={() => setReaderSidebarOpen(false)}
+                            />
+                          )}
+
                           {/* COLLAPSIBLE SIDEBAR: TABLE OF CONTENTS */}
                           {readerSidebarOpen && (
-                            <aside className={`w-64 shrink-0 hidden md:flex flex-col pr-4 mr-3 h-full overflow-hidden border-r transition-all ${
-                              readerTheme === 'warm' ? 'border-[#E6DEC9]' :
-                              readerTheme === 'dark' ? 'border-stone-800' :
-                              'border-stone-200/50'
+                            <aside className={`w-64 shrink-0 flex flex-col pr-4 mr-3 h-full overflow-hidden border-r transition-all absolute md:relative z-30 md:z-auto shadow-xl md:shadow-none max-w-[85vw] ${
+                              readerTheme === 'warm' ? 'bg-[#FBF8F3] border-[#E6DEC9]' :
+                              readerTheme === 'dark' ? 'bg-[#191917] border-stone-800' :
+                              'bg-white border-stone-200/50'
                             }`}>
-                              <div className="pb-2.5 mb-2 flex items-center justify-between">
+                              <div className="pb-2.5 mb-2 flex items-center justify-between border-b md:border-none border-stone-200/50 px-2 md:px-0">
                                 <span className={`text-[10px] font-extrabold uppercase tracking-widest ${
                                   readerTheme === 'dark' ? 'text-amber-500' : 'text-[#8C271E]'
                                 }`}>
@@ -1770,10 +1842,11 @@ Thời gian trích xuất: ${new Date().toLocaleString('vi-VN')}
                                   className="p-1 hover:bg-black/5 dark:hover:bg-stone-800 rounded text-stone-400 hover:text-stone-600 dark:hover:text-stone-250 transition-colors"
                                   title="Ẩn mục lục bên"
                                 >
-                                  <ChevronRight className="w-3.5 h-3.5" />
+                                  <X className="w-3.5 h-3.5 block md:hidden" />
+                                  <ChevronRight className="w-3.5 h-3.5 hidden md:block animate-pulse-slow" />
                                 </button>
                               </div>
-                              <div className="flex-1 overflow-y-auto space-y-1.5 pr-1.5 pb-6">
+                              <div className="flex-1 overflow-y-auto space-y-1.5 pr-1.5 pb-6 px-2 md:px-0">
                                 {activeDoc.sections.map((sec) => {
                                   const matchesQuery = searchQuery.trim() !== '' && getSectionMatchCount(sec, searchQuery) > 0;
                                   
@@ -1785,6 +1858,9 @@ Thời gian trích xuất: ${new Date().toLocaleString('vi-VN')}
                                         const element = document.getElementById(sec.id);
                                         if (element) {
                                           element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                        }
+                                        if (window.innerWidth < 768) {
+                                          setReaderSidebarOpen(false);
                                         }
                                       }}
                                       className={`w-full text-left p-2.5 rounded-lg transition-all flex flex-col gap-1 border text-xs group ${
@@ -2279,9 +2355,20 @@ Thời gian trích xuất: ${new Date().toLocaleString('vi-VN')}
                           {repoActiveDoc.title}
                         </h3>
                         {repoActiveDoc.summary && (
-                          <div className="text-xs text-stone-650 font-sans italic leading-relaxed border-t border-dashed border-stone-200 pt-3">
-                            <span className="font-bold uppercase text-[9px] tracking-wider text-stone-400 block mb-1">Tóm lược nội dung:</span>
-                            {repoActiveDoc.summary}
+                          <div className="text-xs text-stone-650 font-sans italic leading-relaxed border-t border-dashed border-stone-200 pt-3.5">
+                            {/* Mobile Toggle Button */}
+                            <button
+                              type="button"
+                              onClick={() => setShowRepoSummary(!showRepoSummary)}
+                              className="flex md:hidden items-center justify-between w-full text-left py-1.5 px-2.5 rounded bg-stone-100/80 dark:bg-stone-800 text-[11px] font-bold text-[#8C271E] font-sans border border-stone-250/50 transition-all mb-1"
+                            >
+                              <span>{showRepoSummary ? '▲ Ẩn tóm lược nội dung' : '▼ Xem nhanh tóm lược nội dung'}</span>
+                            </button>
+                            
+                            <div className={`${showRepoSummary ? 'block' : 'hidden md:block'}`}>
+                              <span className="font-bold uppercase text-[9px] tracking-wider text-stone-400 block mb-1">Tóm lược nội dung:</span>
+                              {repoActiveDoc.summary}
+                            </div>
                           </div>
                         )}
                       </div>
